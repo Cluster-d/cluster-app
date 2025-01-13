@@ -33,6 +33,7 @@ const Toolbar = () => {
 
       setLabel('');
       setSize(100);
+      console.log('Cluster Props:', { label, color, size });
     }
     setVisible(false);
   };
