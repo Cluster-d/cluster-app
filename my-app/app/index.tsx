@@ -1,20 +1,3 @@
-// import { Text, View } from "react-native";
-// import Toolbar from "@/src/components/Toolbar";
-
-// export default function Index() {
-//   return (
-//     <View
-//       style={{
-//         flex: 1,
-//         justifyContent: "center",
-//         alignItems: "center",
-//       }}
-//     >
-//       <Toolbar />
-//     </View>
-//   );
-// }
-
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';

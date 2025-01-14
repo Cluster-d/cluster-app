@@ -1,3 +1,5 @@
+
+// export default Toolbar;
 import React, { useState } from 'react';
 import { View, StyleSheet, TextInput, FlatList, Text } from 'react-native';
 import Cluster from './Cluster';
@@ -38,6 +40,11 @@ const Toolbar = () => {
     setVisible(false);
   };
 
+  const handleDeleteCluster = (id: string) => {
+    setClusters((prevClusters) => prevClusters.filter((cluster) => cluster.id !== id));
+    console.log(`Deleted cluster with id: ${id}`);
+  };
+
   return (
     <PaperProvider theme={DefaultTheme}>
       <Appbar.Header>
@@ -62,6 +69,7 @@ const Toolbar = () => {
               label={item.label}
               color={item.color}
               size={item.size}
+              onDelete={() => handleDeleteCluster(item.id)} // Pass delete handler
             />
           )}
         />
@@ -78,17 +86,21 @@ const Toolbar = () => {
               style={styles.input}
             />
 
-            <Text style={styles.sliderLabel}>Select Cluster Color</Text>
+            <Text style={styles.sliderLabel}>Select Color</Text>
             <ColorPickerWheel
-            initialColor={color}
-            onColorChange={(selectedColor: string) => setColor(selectedColor)}
-            style={styles.colorPicker as any} // Type assertion if needed
+              initialColor={color}
+              onColorChange={(selectedColor: string) => setColor(selectedColor)}
+              style={styles.colorPicker as any} // Type assertion if needed
             />
+            <View style={styles.buttonContainer}>
+            <Button onPress={() => setVisible(false)} style={styles.actionButton}>
+              Cancel
+            </Button>
+            <Button onPress={handleSaveCluster} style={styles.actionButton}>
+              Save
+            </Button>
+          </View>
           </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={() => setVisible(false)}>Cancel</Button>
-            <Button onPress={handleSaveCluster}>Save</Button>
-          </Dialog.Actions>
         </Dialog>
       </Portal>
     </PaperProvider>
@@ -111,14 +123,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   sliderLabel: {
+    flex: 0,
     marginTop: 10,
     fontSize: 16,
     fontWeight: 'bold',
+    textAlign: 'center',
   },
   colorPicker: {
     marginTop: 20,
     height: 150,
     width: 150,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center', // Center buttons horizontally
+    alignItems: 'center', // Center buttons vertically if needed
+  },
+  actionButton: {
+    marginHorizontal: 10, // Add space between buttons
   },
 });
 
