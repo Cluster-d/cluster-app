@@ -1,207 +1,3 @@
-// import React, { useState, useEffect } from 'react';
-// import { View, Text, StyleSheet, TouchableOpacity, Pressable } from 'react-native';
-// import { GestureDetector, Gesture } from 'react-native-gesture-handler';
-// import Animated, {
-//   useSharedValue,
-//   useAnimatedStyle,
-//   runOnJS,
-// } from 'react-native-reanimated';
-
-// type ClusterProps = {
-//   id: string;
-//   label: string;
-//   color: string;
-//   size: number;
-//   x: number;
-//   y: number;
-//   onDelete: () => void;
-//   onCreateNode: (parentId: string) => void;
-//   onDragEnd: (id: string, newX: number, newY: number) => void; // <-- new prop
-// };
-
-// const Cluster = ({
-//   id,
-//   label,
-//   color,
-//   size,
-//   x,
-//   y,
-//   onDelete,
-//   onCreateNode,
-//   onDragEnd,
-// }: ClusterProps) => {
-//   const [modalVisible, setModalVisible] = useState(false);
-
-//   // Use SharedValues to handle the drag offset
-//   const xOffset = useSharedValue(x);
-//   const yOffset = useSharedValue(y);
-
-//   // If the parent (Toolbar) updates the cluster's x/y, sync local shared values
-//   useEffect(() => {
-//     xOffset.value = x;
-//     yOffset.value = y;
-//   }, [x, y, xOffset, yOffset]);
-
-//   // Animated style to position the cluster
-//   const animatedStyle = useAnimatedStyle(() => ({
-//     transform: [
-//       { translateX: xOffset.value },
-//       { translateY: yOffset.value },
-//     ],
-//   }));
-
-//   // Define the drag gesture
-//   const dragGesture = Gesture.Pan()
-//     .onUpdate((event) => {
-//       // Move the cluster as we drag
-//       xOffset.value = event.translationX + x;
-//       yOffset.value = event.translationY + y;
-//     })
-//     .onEnd(() => {
-//       // Once drag ends, update the parent so lines can redraw
-//       runOnJS(onDragEnd)(id, xOffset.value, yOffset.value);
-//     });
-
-//   // Handle long press to show the modal with cluster options
-//   const handleLongPress = () => {
-//     setModalVisible(true);
-//   };
-
-//   const closeModal = () => {
-//     setModalVisible(false);
-//   };
-
-//   return (
-//     <>
-//       <GestureDetector gesture={dragGesture}>
-//         <Animated.View
-//           style={[
-//             styles.circle,
-//             {
-//               backgroundColor: color,
-//               width: size,
-//               height: size,
-//               borderRadius: size / 2,
-//             },
-//             animatedStyle,
-//           ]}
-//         >
-//           <Pressable
-//             onLongPress={handleLongPress}
-//             style={({ pressed }) => [
-//               styles.circle,
-//               {
-//                 backgroundColor: pressed ? 'lightgray' : color,
-//                 width: size,
-//                 height: size,
-//                 borderRadius: size / 2,
-//               },
-//             ]}
-//             hitSlop={20}
-//             pressRetentionOffset={20}
-//           >
-//             <Text style={styles.label}>{label}</Text>
-//           </Pressable>
-//         </Animated.View>
-//       </GestureDetector>
-
-//       {modalVisible && (
-//         <View style={styles.modalOverlay}>
-//           <View style={styles.modalContent}>
-//             <Text style={styles.modalTitle}>Options for {label}</Text>
-
-//             <TouchableOpacity
-//               style={styles.modalOption}
-//               onPress={() => {
-//                 onDelete();
-//                 closeModal();
-//               }}
-//             >
-//               <Text style={styles.modalOptionText}>Delete Cluster</Text>
-//             </TouchableOpacity>
-
-//             <TouchableOpacity
-//               style={styles.modalOption}
-//               onPress={() => {
-//                 onCreateNode(id);
-//                 closeModal();
-//               }}
-//             >
-//               <Text style={styles.modalOptionText}>Create New Node</Text>
-//             </TouchableOpacity>
-
-//             <TouchableOpacity style={styles.modalClose} onPress={closeModal}>
-//               <Text style={styles.modalCloseText}>Close</Text>
-//             </TouchableOpacity>
-//           </View>
-//         </View>
-//       )}
-//     </>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   circle: {
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//     position: 'absolute',
-//   },
-//   label: {
-//     color: 'white',
-//     fontSize: 18,
-//     fontWeight: 'bold',
-//     textAlign: 'center',
-//   },
-//   modalOverlay: {
-//     flex: 1,
-//     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//     position: 'absolute',
-//     width: '100%',
-//     height: '100%',
-//   },
-//   modalContent: {
-//     backgroundColor: 'white',
-//     padding: 20,
-//     borderRadius: 10,
-//     width: '80%',
-//     alignItems: 'center',
-//   },
-//   modalTitle: {
-//     fontSize: 20,
-//     fontWeight: 'bold',
-//     marginBottom: 20,
-//   },
-//   modalOption: {
-//     width: '100%',
-//     padding: 10,
-//     marginVertical: 5,
-//     backgroundColor: '#f0f0f0',
-//     borderRadius: 5,
-//     alignItems: 'center',
-//   },
-//   modalOptionText: {
-//     fontSize: 16,
-//     color: 'black',
-//   },
-//   modalClose: {
-//     marginTop: 20,
-//     padding: 10,
-//     backgroundColor: 'red',
-//     borderRadius: 5,
-//     alignItems: 'center',
-//     width: '100%',
-//   },
-//   modalCloseText: {
-//     color: 'white',
-//     fontWeight: 'bold',
-//   },
-// });
-
-// export default Cluster;
-
-
 import React from 'react';
 import { View, Text } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -259,3 +55,99 @@ const Cluster = ({ label, color, size, defaultX, defaultY }: ClusterProps) => {
 };
 
 export default Cluster;
+
+
+
+
+
+// // Cluster.tsx
+
+// import React, { useRef } from 'react';
+// import { Text, StyleSheet } from 'react-native';
+// import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+// import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+
+// interface ClusterProps {
+//   label: string;
+//   color: string;
+//   size: number;
+//   initialX: number;
+//   initialY: number;
+// }
+
+// /**
+//  * A simple draggable cluster circle.
+//  */
+// const Cluster: React.FC<ClusterProps> = React.memo(({ label, color, size, initialX, initialY }) => {
+//   // Ensure initialX and initialY are numbers, default to 0
+//   const safeInitialX = initialX ?? 0;
+//   const safeInitialY = initialY ?? 0;
+
+//   // Shared values for position
+//   const x = useSharedValue(safeInitialX);
+//   const y = useSharedValue(safeInitialY);
+
+//   // Refs to store the starting position
+//   const startX = useRef(0);
+//   const startY = useRef(0);
+
+//   // Animated style
+//   const animatedStyle = useAnimatedStyle(() => ({
+//     transform: [
+//       { translateX: x.value },
+//       { translateY: y.value },
+//     ],
+//   }));
+
+//   // Pan Gesture for dragging
+//   const panGesture = Gesture.Pan()
+//     .onStart(() => {
+//       // Capture the current position at the start of the gesture
+//       startX.current = x.value;
+//       startY.current = y.value;
+//     })
+//     .onUpdate((event) => {
+//       // Update the position based on the gesture's translation
+//       x.value = startX.current + event.translationX;
+//       y.value = startY.current + event.translationY;
+//     });
+
+//   return (
+//     <GestureDetector gesture={panGesture}>
+//       <Animated.View
+//         style={[
+//           styles.circle,
+//           {
+//             width: size,
+//             height: size,
+//             borderRadius: size / 2,
+//             backgroundColor: color,
+//           },
+//           animatedStyle,
+//         ]}
+//       >
+//         <Text style={styles.label}>{label}</Text>
+//       </Animated.View>
+//     </GestureDetector>
+//   );
+// });
+
+// const styles = StyleSheet.create({
+//   circle: {
+//     position: 'absolute',
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//     elevation: 5, // Adds shadow for Android
+//     shadowColor: '#000', // Adds shadow for iOS
+//     shadowOffset: { width: 0, height: 2 }, // iOS shadow
+//     shadowOpacity: 0.3, // iOS shadow
+//     shadowRadius: 3, // iOS shadow
+//   },
+//   label: {
+//     color: 'white',
+//     fontSize: 16,
+//     fontWeight: 'bold',
+//   },
+// });
+
+// export default Cluster;
