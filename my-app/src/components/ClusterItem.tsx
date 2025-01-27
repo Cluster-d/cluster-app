@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Pressable } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { ClusterData } from './clusterTypes';
 
 interface ClusterItemProps {
@@ -21,12 +21,12 @@ export default function ClusterItem({
   const [modalVisible, setModalVisible] = useState(false);
 
   // Refs to track the cluster’s “start position” when the gesture begins
-  const touchOffsetXRef = useRef(0);
-  const touchOffsetYRef = useRef(0);
-  console.log(touchOffsetXRef)
-  console.log(touchOffsetYRef)
+  // let touchOffsetXRef = useRef(0);
+  // let touchOffsetYRef = useRef(0);
 
   const { id, label, color, size, xOffset, yOffset } = cluster;
+  // console.log(`xOffset ${xOffset}` )
+  // console.log(`yOffset ${yOffset}` )
 
   // Animated style
   const animatedStyle = useAnimatedStyle(() => ({
@@ -37,16 +37,30 @@ export default function ClusterItem({
   }));
 
   // Pan gesture that uses relative translation
-  const dragGesture = Gesture.Pan()
+  // const dragGesture = Gesture.Pan()
+  //   .onStart(() => {
+  //     // Capture cluster’s current offset at the start of the gesture
+  //     touchOffsetXRef.current = xOffset.value;
+  //     touchOffsetYRef.current = yOffset.value;
+  //     console.log(`initial xOffset: ${xOffset.value}, 'initial yOffset: ${yOffset.value}`)
+  //   })
+  //   .onUpdate((evt) => {
+  //     // Move the cluster by adding the finger's relative translation
+  //     xOffset.value = touchOffsetXRef.current + evt.translationX;
+  //     yOffset.value = touchOffsetYRef.current + evt.translationY;
+  //     console.log(`xOffset: ${xOffset.value}, 'yOffset: ${yOffset.value}`)
+  //   });
+  
+    const dragGesture = Gesture.Pan()
     .onStart(() => {
-      // Capture cluster’s current offset at the start of the gesture
-      touchOffsetXRef.current = xOffset.value;
-      touchOffsetYRef.current = yOffset.value;
+      xOffset.value = 0; // Directly uses shared values
+      yOffset.value = 0;
     })
     .onUpdate((evt) => {
-      // Move the cluster by adding the finger's relative translation
-      xOffset.value = touchOffsetXRef.current + evt.translationX;
-      yOffset.value = touchOffsetYRef.current + evt.translationY;
+      xOffset.value = evt.translationX;
+      console.log(evt.absoluteX)
+      yOffset.value = evt.translationY;
+      console.log(evt.absoluteX)
     });
 
   const handleLongPress = () => setModalVisible(true);
@@ -78,8 +92,8 @@ export default function ClusterItem({
                 backgroundColor: pressed ? 'lightgray' : color,
               },
             ]}
-            hitSlop={20}
-            pressRetentionOffset={20}
+            hitSlop={10}
+            pressRetentionOffset={10}
           >
             <Text style={styles.label}>{label}</Text>
           </Pressable>

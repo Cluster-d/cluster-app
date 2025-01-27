@@ -121,6 +121,7 @@ export default function Toolbar() {
                 value={label}
                 onChangeText={setLabel}
                 style={styles.input}
+                maxLength={20} 
               />
               <View style={styles.colorPickerContainer}>
                 <Text style={styles.sliderLabel}>Select Color</Text>
