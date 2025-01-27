@@ -39,8 +39,18 @@ export default function Toolbar() {
 
     const id = uuidv4();
     const parentCluster = clusters.find((c) => c.id === parentId);
-    const defaultX = parentCluster ? parentCluster.xOffset.value + 150 : Math.random() * 300;
-    const defaultY = parentCluster ? parentCluster.yOffset.value + 150 : Math.random() * 300;
+    // const defaultX = parentCluster ? parentCluster.xOffset.value + 150 : Math.random() * 300;
+    // const defaultY = parentCluster ? parentCluster.yOffset.value + 150 : Math.random() * 300;
+    const { width, height } = Dimensions.get('window');
+    // Calculate default positions
+    const centerX = width / 2 - size / 2; // Center horizontally, accounting for cluster size
+    const centerY = height / 2 - size / 2; // Center vertically, accounting for cluster size
+
+    // Determine cluster position based on whether there's a parent
+    const defaultX = parentCluster ? parentCluster.xOffset.value + 100 : centerX;
+    const defaultY = parentCluster ? parentCluster.yOffset.value + 100 : centerY;
+
+
 
     const newCluster = createClusterData(
       id,

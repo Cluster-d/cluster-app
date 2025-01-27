@@ -26,7 +26,7 @@ export function createClusterData(
     color,
     size,
     parentId,
-    xOffset: makeMutable<number>(defaultX), // <number> here
-    yOffset: makeMutable<number>(defaultY), // <number> here
+    xOffset: makeMutable<number>(defaultX),
+    yOffset: makeMutable<number>(defaultY), 
   };
 }

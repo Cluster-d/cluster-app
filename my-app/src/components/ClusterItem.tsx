@@ -23,6 +23,8 @@ export default function ClusterItem({
   // Refs to track the cluster’s “start position” when the gesture begins
   const touchOffsetXRef = useRef(0);
   const touchOffsetYRef = useRef(0);
+  console.log(touchOffsetXRef)
+  console.log(touchOffsetYRef)
 
   const { id, label, color, size, xOffset, yOffset } = cluster;
 
