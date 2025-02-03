@@ -20,14 +20,8 @@ export default function ClusterItem({
 }: ClusterItemProps) {
   const [modalVisible, setModalVisible] = useState(false);
 
-  // Refs to track the cluster’s “start position” when the gesture begins
-  // let touchOffsetXRef = useRef(0);
-  // let touchOffsetYRef = useRef(0);
-
   const { id, label, color, size, xOffset, yOffset } = cluster;
-  // console.log(`xOffset ${xOffset}` )
-  // console.log(`yOffset ${yOffset}` )
-
+ 
   // Animated style
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [
@@ -36,31 +30,9 @@ export default function ClusterItem({
     ],
   }));
 
-  // Pan gesture that uses relative translation
-  // const dragGesture = Gesture.Pan()
-  //   .onStart(() => {
-  //     // Capture cluster’s current offset at the start of the gesture
-  //     touchOffsetXRef.current = xOffset.value;
-  //     touchOffsetYRef.current = yOffset.value;
-  //     console.log(`initial xOffset: ${xOffset.value}, 'initial yOffset: ${yOffset.value}`)
-  //   })
-  //   .onUpdate((evt) => {
-  //     // Move the cluster by adding the finger's relative translation
-  //     xOffset.value = touchOffsetXRef.current + evt.translationX;
-  //     yOffset.value = touchOffsetYRef.current + evt.translationY;
-  //     console.log(`xOffset: ${xOffset.value}, 'yOffset: ${yOffset.value}`)
-  //   });
-  
-    const dragGesture = Gesture.Pan()
-    .onStart(() => {
-      xOffset.value = 0; // Directly uses shared values
-      yOffset.value = 0;
-    })
-    .onUpdate((evt) => {
-      xOffset.value = evt.translationX;
-      console.log(evt.absoluteX)
-      yOffset.value = evt.translationY;
-      console.log(evt.absoluteX)
+    const dragGesture = Gesture.Pan().onChange(event => {
+      xOffset.value += event.changeX;
+      yOffset.value += event.changeY;
     });
 
   const handleLongPress = () => setModalVisible(true);
