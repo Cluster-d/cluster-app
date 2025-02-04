@@ -7,6 +7,7 @@ import {
   Provider as PaperProvider,
   Dialog,
   Portal,
+  Menu,
 } from 'react-native-paper';
 import Svg from 'react-native-svg';
 import ColorPickerWheel from 'react-native-color-picker-wheel';
@@ -23,6 +24,25 @@ export default function Toolbar() {
   const [size, setSize] = useState(100);
   const [dialogVisible, setDialogVisible] = useState(false);
   const [parentId, setParentId] = useState<string | null>(null);
+  const [menuVisible, setMenuVisible] = useState(false);
+
+  // Function to open the menu
+  const openMenu = () => setMenuVisible(true);
+
+  // Function to close the menu
+  const closeMenu = () => setMenuVisible(false);
+
+  // Function to handle Undo
+  const handleUndo = () => {
+    console.log('Undo pressed');
+    closeMenu();
+  };
+
+  // Function to handle Convert to List
+  const handleConvertToList = () => {
+    console.log('Convert to List pressed');
+    closeMenu();
+  };
 
   const handleCreateCluster = () => {
     setParentId(null);
@@ -39,8 +59,7 @@ export default function Toolbar() {
 
     const id = uuidv4();
     const parentCluster = clusters.find((c) => c.id === parentId);
-    // const defaultX = parentCluster ? parentCluster.xOffset.value + 150 : Math.random() * 300;
-    // const defaultY = parentCluster ? parentCluster.yOffset.value + 150 : Math.random() * 300;
+    
     const { width, height } = Dimensions.get('window');
     // Calculate default positions
     const centerX = width / 2 - size / 2; // Center horizontally, accounting for cluster size
@@ -73,15 +92,24 @@ export default function Toolbar() {
     setClusters((prev) => prev.filter((c) => c.id !== id));
   };
 
+
   return (
     <PaperProvider theme={DefaultTheme}>
       <Appbar.Header style={styles.header}>
-        <Appbar.Action icon="menu" onPress={() => console.log('Menu pressed')} />
-        <Button
-          mode="contained"
-          onPress={handleCreateCluster}
-          style={styles.newClusterButton}
+        {/* Menu icon with dropdown */}
+        <Menu
+          visible={menuVisible}
+          onDismiss={closeMenu}
+          anchor={
+            <Appbar.Action icon="menu" onPress={openMenu} />
+          }
         >
+          <Menu.Item onPress={handleUndo} title="Undo" leadingIcon="undo" />
+          <Menu.Item onPress={handleConvertToList} title="Convert to List" leadingIcon="format-list-bulleted" />
+        </Menu>
+
+        {/* New Cluster Button */}
+        <Button mode="contained" onPress={handleCreateCluster} style={styles.newClusterButton}>
           New Cluster
         </Button>
       </Appbar.Header>
