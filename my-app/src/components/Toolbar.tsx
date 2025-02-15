@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { View, StyleSheet, TextInput, Text, Dimensions } from 'react-native';
 import {
   Appbar,
@@ -17,6 +17,10 @@ import { ClusterData, createClusterData } from './clusterTypes';
 import ClusterItem from './ClusterItem';
 import LinkLine from './LinkLine';
 
+
+
+
+
 export default function Toolbar() {
   const [clusters, setClusters] = useState<ClusterData[]>([]);
   const [label, setLabel] = useState('');
@@ -25,6 +29,9 @@ export default function Toolbar() {
   const [dialogVisible, setDialogVisible] = useState(false);
   const [parentId, setParentId] = useState<string | null>(null);
   const [menuVisible, setMenuVisible] = useState(false);
+
+  const [clustersArray, setClustersArray] = useState([clusters]);
+  const index = useRef(0);
 
   // Function to open the menu
   const openMenu = () => setMenuVisible(true);
@@ -35,6 +42,19 @@ export default function Toolbar() {
   // Function to handle Undo
   const handleUndo = () => {
     console.log('Undo pressed');
+    if (index.current > 0) {
+            index.current = index.current - 1;
+            setClusters(clustersArray[index.current]);
+    }
+    closeMenu();
+  };
+
+  const handleRedo = () => {
+    console.log('Redo pressed');
+    if (index.current < clustersArray.length - 1) {
+            index.current = index.current + 1;
+            setClusters(clustersArray[index.current]);
+    }
     closeMenu();
   };
 
@@ -49,9 +69,40 @@ export default function Toolbar() {
     setDialogVisible(true);
   };
 
-  const handleCreateNode = (clusterId: string) => {
-    setParentId(clusterId);
-    setDialogVisible(true);
+  // const handleCreateNode = (clusterId: string) => {
+  //   setParentId(clusterId);
+  //   setDialogVisible(true);
+  // };
+
+  const handleCreateNode = (parentId: string) => {
+    setClusters((prevClusters) => {
+      // Find parent cluster
+      const parentCluster = prevClusters.find((cluster) => cluster.id === parentId);
+      if (!parentCluster) return prevClusters; // Exit if parent not found
+  
+      // Create new node
+      
+      const newNode: ClusterData = createClusterData(
+        Date.now().toString(),
+        `Node ${prevClusters.length + 1}`,
+        color,
+        size,
+        parentCluster.xOffset.value + 100, // Position it relative to parent
+        parentCluster.yOffset.value + 100,
+        parentId
+      );
+  
+      // Update parent's children array immutably
+      const updatedParent = {
+        ...parentCluster,
+        children: [...parentCluster.children, newNode] // Create a new array
+      };
+  
+      // Return a new array with updated clusters
+      return prevClusters.map(cluster =>
+        cluster.id === parentId ? updatedParent : cluster
+      ).concat(newNode); // Add the new node separately
+    });
   };
 
   const handleSaveCluster = () => {
@@ -69,8 +120,6 @@ export default function Toolbar() {
     const defaultX = parentCluster ? parentCluster.xOffset.value + 100 : centerX;
     const defaultY = parentCluster ? parentCluster.yOffset.value + 100 : centerY;
 
-
-
     const newCluster = createClusterData(
       id,
       label.trim(),
@@ -82,6 +131,14 @@ export default function Toolbar() {
     );
 
     setClusters((prev) => [...prev, newCluster]);
+
+    //undo logic
+    index.current = index.current + 1;
+    setClustersArray(
+            [...clustersArray.slice(0, index.current), [newCluster]]
+        );
+    console.log(clustersArray)
+
     setLabel('');
     setColor('#ff0000');
     setSize(100);
@@ -89,7 +146,31 @@ export default function Toolbar() {
   };
 
   const handleDeleteCluster = (id: string) => {
-    setClusters((prev) => prev.filter((c) => c.id !== id));
+    setClusters((prevClusters) => {
+      // Find all nodes to delete, starting from the parent
+      const nodesToDelete = new Set([id]);
+  
+      // Recursively find child nodes to delete
+      const findChildrenToDelete = (parentId: string) => {
+        prevClusters.forEach((cluster) => {
+          if (cluster.parentId === parentId) {
+            nodesToDelete.add(cluster.id);
+            findChildrenToDelete(cluster.id); // Recursively check deeper children
+          }
+        });
+      };
+  
+      findChildrenToDelete(id);
+  
+      // Filter out all nodes that need to be deleted
+      return prevClusters.filter((cluster) => !nodesToDelete.has(cluster.id));
+    });
+
+    // index.current = index.current - 1;
+    // setClustersArray(
+    //         [...clustersArray.slice(0, index.current)]
+    //     );
+
   };
 
 
