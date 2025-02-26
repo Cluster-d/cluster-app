@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Pressable } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Pressable } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import ColorPickerWheel from 'react-native-color-picker-wheel';
@@ -22,6 +22,7 @@ export default function ClusterItem({
   const [modalVisible, setModalVisible] = useState(false);
   const [confirmationVisible, setConfirmationVisible] = useState(false);
   const [colorPickerVisible, setColorPickerVisible] = useState(false);
+  const [labelInputVisible, setLabelInputVisible] = useState(false);
 
   const { id, label, color, size, xOffset, yOffset } = cluster;
 
@@ -41,6 +42,11 @@ export default function ClusterItem({
     setColorPickerVisible(true);
     setModalVisible(false);
   };
+
+  const changeLabel = () => {
+    setLabelInputVisible(true);
+    setModalVisible(false);
+  }
 
   // Updates node color
 
@@ -94,6 +100,11 @@ export default function ClusterItem({
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Options for {label}</Text>
 
+            { /* Change Label */}
+            <TouchableOpacity style={styles.modalOption} onPress={() => changeLabel()}>
+              <Text style={styles.modalOptionText}>Edit Label </Text>
+            </TouchableOpacity>
+
             {/* Delete Cluster */}
             <TouchableOpacity style={styles.modalOption} onPress={() => setConfirmationVisible(true)}>
               <Text style={styles.modalOptionText}>Delete Cluster</Text>
@@ -108,7 +119,7 @@ export default function ClusterItem({
             <TouchableOpacity
               style={styles.modalOption}
               onPress={() => {
-                openColorPicker(); // ✅ Open color picker
+                openColorPicker(); // Open color picker
               }}
 >
   <Text style={styles.modalOptionText}>Change Color</Text>
@@ -146,11 +157,28 @@ export default function ClusterItem({
       <View style={styles.colorPickerContainer}>
         <Text >Select a New Color</Text>
         <ColorPickerWheel
-          initialColor={cluster.color}  // ✅ Start with current color
+          initialColor={cluster.color}  // Start with current color
           onColorChange={(newColor: string) => handleColorChange(newColor)}
           style={{ height: 200, width: 200 }}
         />
         <Button mode="contained" onPress={() => setColorPickerVisible(false)}>
+          Done
+        </Button>
+
+      </View>
+    )}
+    {labelInputVisible && (
+      <View style={styles.colorPickerContainer}>
+        <Text >Edit Label</Text>
+        <TextInput
+                placeholder="Enter Label"
+                placeholderTextColor="#888888"
+                value={label}
+                onChangeText={setLabel}
+                style={styles.input}
+                maxLength={20}
+              />
+        <Button mode="contained" onPress={() => setLabelInputVisible(false)}>
           Done
         </Button>
 
@@ -290,5 +318,13 @@ const styles = StyleSheet.create({
     width: 250,
     marginBottom: 20,
   },
+  input: {
+      height: 40,
+      borderBottomWidth: 1,
+      borderBottomColor: '#ccc',
+      marginBottom: 20,
+      paddingHorizontal: 8,
+      color: '#000',
+    },
 });
 
