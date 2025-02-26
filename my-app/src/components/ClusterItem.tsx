@@ -2,29 +2,32 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Pressable } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import ColorPickerWheel from 'react-native-color-picker-wheel';
 import { ClusterData } from './clusterTypes';
+import { Button } from 'react-native-paper';
 
 interface ClusterItemProps {
-  cluster: ClusterData;      // { id, label, color, size, xOffset, yOffset }
+  cluster: ClusterData;      
   onDelete: () => void;
   onCreateNode: (parentId: string) => void;
+  onUpdateColor: (id: string, newColor: string) => void; // Callback to update color
 }
 
-/**
- * A single draggable cluster circle.
- */
 export default function ClusterItem({
   cluster,
   onDelete,
   onCreateNode,
+  onUpdateColor,
 }: ClusterItemProps) {
   const [modalVisible, setModalVisible] = useState(false);
   const [confirmationVisible, setConfirmationVisible] = useState(false);
+  const [colorPickerVisible, setColorPickerVisible] = useState(false);
 
   const { id, label, color, size, xOffset, yOffset } = cluster;
-  // console.log(`This is our cluster: ${cluster.id}`)
-  // console.log(`This is our child: ${cluster.children}`)
-  
+
+  // **Calculate dynamic font size based on cluster size**
+  const fontSize = Math.max(size * 0.15, 8);
+
   // Animated style
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [
@@ -33,28 +36,27 @@ export default function ClusterItem({
     ],
   }));
 
-  const dragGesture = Gesture.Pan().onChange(event => {
-    xOffset.value += event.changeX;
-    yOffset.value += event.changeY;
-  });
-
-  const handleLongPress = () => setModalVisible(true);
-  const closeModal = () => setModalVisible(false);
-
-  // Handles the confirmation prompt
-  const youSure = () => {
+  // Opens color picker
+  const openColorPicker = () => {
+    setColorPickerVisible(true);
     setModalVisible(false);
-    setConfirmationVisible(true); // Show confirmation modal
   };
 
-  const confirmDelete = () => {
-    onDelete();
-    setConfirmationVisible(false); // Close confirmation modal after deletion
+  // Updates node color
+
+  const handleColorChange = (newColor: string) => {
+    if (onUpdateColor) {
+      onUpdateColor(id, newColor);
+    }
+    setColorPickerVisible(true);
   };
 
   return (
     <>
-      <GestureDetector gesture={dragGesture}>
+      <GestureDetector gesture={Gesture.Pan().onChange(event => {
+        xOffset.value += event.changeX;
+        yOffset.value += event.changeY;
+      })}>
         <Animated.View
           style={[
             styles.circle,
@@ -68,7 +70,7 @@ export default function ClusterItem({
           ]}
         >
           <Pressable
-            onLongPress={handleLongPress}
+            onLongPress={() => setModalVisible(true)}
             style={({ pressed }) => [
               styles.circle,
               {
@@ -81,7 +83,7 @@ export default function ClusterItem({
             hitSlop={10}
             pressRetentionOffset={10}
           >
-            <Text style={styles.label}>{label}</Text>
+            <Text style={[styles.label, { fontSize }]}>{label}</Text>
           </Pressable>
         </Animated.View>
       </GestureDetector>
@@ -92,24 +94,28 @@ export default function ClusterItem({
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Options for {label}</Text>
 
-            <TouchableOpacity
-              style={styles.modalOption}
-              onPress={youSure} // Trigger confirmation prompt
-            >
+            {/* Delete Cluster */}
+            <TouchableOpacity style={styles.modalOption} onPress={() => setConfirmationVisible(true)}>
               <Text style={styles.modalOptionText}>Delete Cluster</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.modalOption}
-              onPress={() => {
-                onCreateNode(id);
-                closeModal();
-              }}
-            >
+            {/* Create New Node */}
+            <TouchableOpacity style={styles.modalOption} onPress={() => { onCreateNode(id); setModalVisible(false); }}>
               <Text style={styles.modalOptionText}>Create New Node</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.modalClose} onPress={closeModal}>
+            {/* Change Color Button */}
+            <TouchableOpacity
+              style={styles.modalOption}
+              onPress={() => {
+                openColorPicker(); // ✅ Open color picker
+              }}
+>
+  <Text style={styles.modalOptionText}>Change Color</Text>
+</TouchableOpacity>
+
+            {/* Close Modal */}
+            <TouchableOpacity style={styles.modalClose} onPress={() => setModalVisible(false)}>
               <Text style={styles.modalCloseText}>Close</Text>
             </TouchableOpacity>
           </View>
@@ -123,7 +129,7 @@ export default function ClusterItem({
             <Text style={styles.modalTitle}>Are you sure you want to delete this?</Text>
 
             <View style={styles.confirmationButtons}>
-              <TouchableOpacity style={styles.confirmButton} onPress={confirmDelete}>
+              <TouchableOpacity style={styles.confirmButton} onPress={onDelete}>
                 <Text style={styles.confirmButtonText}>Yes</Text>
               </TouchableOpacity>
 
@@ -134,6 +140,22 @@ export default function ClusterItem({
           </View>
         </View>
       )}
+
+      {/* Color Picker Modal */}
+      {colorPickerVisible && (
+      <View style={styles.colorPickerContainer}>
+        <Text >Select a New Color</Text>
+        <ColorPickerWheel
+          initialColor={cluster.color}  // ✅ Start with current color
+          onColorChange={(newColor: string) => handleColorChange(newColor)}
+          style={{ height: 200, width: 200 }}
+        />
+        <Button mode="contained" onPress={() => setColorPickerVisible(false)}>
+          Done
+        </Button>
+
+      </View>
+    )}
     </>
   );
 }
@@ -146,7 +168,6 @@ const styles = StyleSheet.create({
   },
   label: {
     color: 'white',
-    fontSize: 18,
     fontWeight: 'bold',
   },
   modalOverlay: {
@@ -224,4 +245,49 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
   },
+  // colorPickerContainer: {
+  //   position: 'absolute',
+  //   top: '50%',  // Center it vertically
+  //   left: '50%',  // Center it horizontally
+  //   transform: [{ translateX: -100 }, { translateY: -100 }], // Adjust for positioning
+  //   backgroundColor: 'white',
+  //   padding: 20,
+  //   borderRadius: 10,
+  //   alignItems: 'center',
+  //   justifyContent: 'center',
+  //   width: 250,
+  //   height: 250,
+  //   elevation: 5,  // Adds shadow on Android
+  //   shadowColor: '#000',
+  //   shadowOffset: { width: 0, height: 2 },
+  //   shadowOpacity: 0.3,
+  //   shadowRadius: 4,
+  //   
+  // },
+  // colorPickerTitle: {
+  //   fontSize: 18,
+  //   fontWeight: 'bold',
+  //   color: '#333',
+  //   marginBottom: 15,
+  //   textAlign: 'center',
+  // },
+  colorPickerContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 15,
+    position: 'absolute',  // Center it horizontally
+    transform: [{ translateX: 50 }, { translateY: 50 }], // Adjust for positioning
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    width: 250,
+    height: 400,
+  },
+  colorPicker: {
+    height: 250,
+    width: 250,
+    marginBottom: 20,
+  },
 });
+
