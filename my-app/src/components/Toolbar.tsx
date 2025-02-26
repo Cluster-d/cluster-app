@@ -1,14 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { View, StyleSheet, TextInput, Text, Dimensions } from 'react-native';
-import {
-  Appbar,
-  Button,
-  DefaultTheme,
-  Provider as PaperProvider,
-  Dialog,
-  Portal,
-  Menu,
-} from 'react-native-paper';
+import { Appbar, Button, DefaultTheme, Provider as PaperProvider, Dialog, Portal, Menu, } from 'react-native-paper';
 import Svg from 'react-native-svg';
 import ColorPickerWheel from 'react-native-color-picker-wheel';
 import { v4 as uuidv4 } from 'uuid';
@@ -152,6 +144,14 @@ export default function Toolbar() {
       )
     );
   };
+
+  const handleUpdateLabel = (id: string, newLabel: string) => {
+    setClusters((prevClusters) =>
+      prevClusters.map((cluster) =>
+        cluster.id === id ? { ...cluster, label: newLabel } : cluster
+      )
+    );
+  };
   
   return (
     <PaperProvider theme={DefaultTheme}>
@@ -183,7 +183,8 @@ export default function Toolbar() {
             cluster={cluster}
             onDelete={() => handleDeleteCluster(cluster.id)}
             onCreateNode={handleCreateNode}
-            onUpdateColor={handleUpdateColor} 
+            onUpdateColor={handleUpdateColor}
+            onUpdateLabel={handleUpdateLabel}  
           />
         ))}
       </View>

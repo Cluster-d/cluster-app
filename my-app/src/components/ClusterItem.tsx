@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Pressable } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Pressable, GestureResponderEvent } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import ColorPickerWheel from 'react-native-color-picker-wheel';
@@ -11,6 +11,7 @@ interface ClusterItemProps {
   onDelete: () => void;
   onCreateNode: (parentId: string) => void;
   onUpdateColor: (id: string, newColor: string) => void; // Callback to update color
+  onUpdateLabel: (id: string, newLabel: string) => void;
 }
 
 export default function ClusterItem({
@@ -18,11 +19,13 @@ export default function ClusterItem({
   onDelete,
   onCreateNode,
   onUpdateColor,
+  onUpdateLabel,
 }: ClusterItemProps) {
   const [modalVisible, setModalVisible] = useState(false);
   const [confirmationVisible, setConfirmationVisible] = useState(false);
   const [colorPickerVisible, setColorPickerVisible] = useState(false);
   const [labelInputVisible, setLabelInputVisible] = useState(false);
+  const [newLabel, setNewLabel] = useState(cluster.label);
 
   const { id, label, color, size, xOffset, yOffset } = cluster;
 
@@ -43,10 +46,13 @@ export default function ClusterItem({
     setModalVisible(false);
   };
 
-  const changeLabel = () => {
-    setLabelInputVisible(true);
-    setModalVisible(false);
-  }
+  const handleLabelChange = () => {
+    if (newLabel.trim()) {
+      onUpdateLabel(id, newLabel);  // Passes the correct argument
+    }
+    setLabelInputVisible(false);
+  };
+  
 
   // Updates node color
 
@@ -56,6 +62,10 @@ export default function ClusterItem({
     }
     setColorPickerVisible(true);
   };
+
+  function changeLabel(event: GestureResponderEvent): void {
+    throw new Error('Function not implemented.');
+  }
 
   return (
     <>
@@ -101,9 +111,10 @@ export default function ClusterItem({
             <Text style={styles.modalTitle}>Options for {label}</Text>
 
             { /* Change Label */}
-            <TouchableOpacity style={styles.modalOption} onPress={() => changeLabel()}>
-              <Text style={styles.modalOptionText}>Edit Label </Text>
+            <TouchableOpacity style={styles.modalOption} onPress={() => setLabelInputVisible(true)}>
+              <Text style={styles.modalOptionText}>Edit Label</Text>
             </TouchableOpacity>
+
 
             {/* Delete Cluster */}
             <TouchableOpacity style={styles.modalOption} onPress={() => setConfirmationVisible(true)}>
@@ -121,13 +132,8 @@ export default function ClusterItem({
               onPress={() => {
                 openColorPicker(); // Open color picker
               }}
->
-  <Text style={styles.modalOptionText}>Change Color</Text>
-</TouchableOpacity>
-
-            {/* Close Modal */}
-            <TouchableOpacity style={styles.modalClose} onPress={() => setModalVisible(false)}>
-              <Text style={styles.modalCloseText}>Close</Text>
+            >
+            <Text style={styles.modalOptionText}>Change Color</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -168,25 +174,23 @@ export default function ClusterItem({
       </View>
     )}
     {labelInputVisible && (
-      <View style={styles.colorPickerContainer}>
-        <Text >Edit Label</Text>
-        <TextInput
-                placeholder="Enter Label"
-                placeholderTextColor="#888888"
-                value={label}
-                onChangeText={setLabel}
-                style={styles.input}
-                maxLength={20}
-              />
-        <Button mode="contained" onPress={() => setLabelInputVisible(false)}>
-          Done
-        </Button>
+    <View style={styles.colorPickerContainer}>
+      <Text>Edit Label</Text>
+      <TextInput
+        placeholder="Enter Label"
+        placeholderTextColor="#888888"
+        value={newLabel}  // Use stored new label
+        onChangeText={setNewLabel}  // Update newLabel state
+        style={styles.input}
+        maxLength={20}
+      />
+      <Button mode="contained" onPress={handleLabelChange}>Done</Button>
 
-      </View>
-    )}
-    </>
-  );
-}
+        </View>
+      )}
+      </>
+    );
+  }
 
 const styles = StyleSheet.create({
   circle: {
