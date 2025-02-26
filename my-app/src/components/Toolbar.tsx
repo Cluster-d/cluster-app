@@ -560,6 +560,7 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       paddingHorizontal: 10,
       backgroundColor: '#bbcacf',
+      zIndex: 15,
     },
     newClusterButton: {
       backgroundColor: '#1e81b0',
