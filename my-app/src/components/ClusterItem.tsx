@@ -165,6 +165,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     justifyContent: 'center',
     alignItems: 'center',
+    boxShadow: '1px 1px 10px 1px',
   },
   label: {
     color: 'white',
