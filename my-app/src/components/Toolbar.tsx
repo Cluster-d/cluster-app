@@ -210,17 +210,20 @@ export default function Toolbar() {
                   style={styles.colorPicker}
                   animationConfig={{ useNativeDriver: true }}
                 />
-                <Text style={styles.fontColor}>Select Font Color</Text>
+
+                {/* NEEDS FUNCTIONALITY  */}
+
+                {/* <Text style={styles.fontColor}>Select Font Color</Text>
                 <View style={styles.buttonContainer}>
                 <Button onPress={() => setDialogVisible(false)} style={styles.blackButton}>
                   Black
                 </Button>
                 <Button onPress={handleSaveCluster} style={styles.whiteButton}>
                   White
-                </Button>
-              </View>
+                </Button> */}
+              {/* </View> */}
+
             </View>
-              
               <View style={styles.buttonContainer}>
                 <Button onPress={() => setDialogVisible(false)} style={styles.actionButton}>
                   Cancel

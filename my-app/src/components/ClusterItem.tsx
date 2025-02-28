@@ -115,17 +115,6 @@ export default function ClusterItem({
               <Text style={styles.modalOptionText}>Edit Label</Text>
             </TouchableOpacity>
 
-
-            {/* Delete Cluster */}
-            <TouchableOpacity style={styles.modalOption} onPress={() => setConfirmationVisible(true)}>
-              <Text style={styles.modalOptionText}>Delete Cluster</Text>
-            </TouchableOpacity>
-
-            {/* Create New Node */}
-            <TouchableOpacity style={styles.modalOption} onPress={() => { onCreateNode(id); setModalVisible(false); }}>
-              <Text style={styles.modalOptionText}>Create New Node</Text>
-            </TouchableOpacity>
-
             {/* Change Color Button */}
             <TouchableOpacity
               style={styles.modalOption}
@@ -134,6 +123,21 @@ export default function ClusterItem({
               }}
             >
             <Text style={styles.modalOptionText}>Change Color</Text>
+            </TouchableOpacity>
+
+            {/* Create New Node */}
+            <TouchableOpacity style={styles.modalOption} onPress={() => { onCreateNode(id); setModalVisible(false); }}>
+              <Text style={styles.modalOptionText}>Create New Node</Text>
+            </TouchableOpacity>
+
+            {/* Delete Cluster */}
+            <TouchableOpacity style={styles.modalOption} onPress={() => setConfirmationVisible(true)}>
+              <Text style={styles.modalOptionText}>Delete Node</Text>
+            </TouchableOpacity>
+
+            {/* Cancel */}
+            <TouchableOpacity style={styles.modalClose} onPress={() => setModalVisible(false)}>
+              <Text style={styles.modalCloseText}>Cancel</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -161,7 +165,7 @@ export default function ClusterItem({
       {/* Color Picker Modal */}
       {colorPickerVisible && (
       <View style={styles.colorPickerContainer}>
-        <Text >Select a New Color</Text>
+        <Text style={styles.colorPickerTitle}>Select a New Color</Text>
         <ColorPickerWheel
           initialColor={cluster.color}  // Start with current color
           onColorChange={(newColor: string) => handleColorChange(newColor)}
@@ -175,7 +179,7 @@ export default function ClusterItem({
     )}
     {labelInputVisible && (
     <View style={styles.colorPickerContainer}>
-      <Text>Edit Label</Text>
+      <Text style={styles.colorPickerTitle}>Edit Label</Text>
       <TextInput
         placeholder="Enter Label"
         placeholderTextColor="#888888"
@@ -219,6 +223,7 @@ const styles = StyleSheet.create({
     width: '80%',
     alignItems: 'center',
     zIndex: 11,
+    boxShadow: "1px 1px 10px 1px"
   },
   modalTitle: {
     fontSize: 20,
@@ -245,7 +250,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   modalCloseText: {
-    color: 'white',
+    color: 'black',
     fontWeight: 'bold',
   },
   confirmationButtons: {
@@ -310,25 +315,29 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     zIndex: 15,
     position: 'absolute',  // Center it horizontally
-    transform: [{ translateX: 50 }, { translateY: 50 }], // Adjust for positioning
+    transform: [{ translateX: 60 }, { translateY: 50 }], // Adjust for positioning
     backgroundColor: 'white',
     padding: 20,
     borderRadius: 10,
     width: 250,
     height: 400,
+    boxShadow: "1px 1px 10px 1px"
   },
-  colorPicker: {
-    height: 250,
-    width: 250,
-    marginBottom: 20,
+  colorPickerTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 15,
+    textAlign: 'center',
+    
   },
   input: {
-      height: 40,
-      borderBottomWidth: 1,
-      borderBottomColor: '#ccc',
-      marginBottom: 20,
-      paddingHorizontal: 8,
-      color: '#000',
+    height: 40,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    marginBottom: 20,
+    paddingHorizontal: 8,
+    color: '#000',
     },
 });
 

@@ -10,6 +10,7 @@ export interface ClusterData {
   xOffset: SharedValue<number>;
   yOffset: SharedValue<number>;
   children: ClusterData[];
+  fontColor: string;
 }
 
 export function createClusterData(
@@ -19,8 +20,8 @@ export function createClusterData(
   size: number,
   defaultX: number,
   defaultY: number,
-  
   parentId?: string,
+  fontColor: string = '#000'
 ): ClusterData {
   return {
     id,
@@ -31,5 +32,6 @@ export function createClusterData(
     xOffset: makeMutable<number>(defaultX),
     yOffset: makeMutable<number>(defaultY), 
     children: [],
+    fontColor, 
   };
 }
